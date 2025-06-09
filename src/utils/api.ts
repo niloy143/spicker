@@ -27,25 +27,23 @@ export type WorkedHour = {
 };
 
 export async function getWorkedHours(startDate: Date, endDate: Date): Promise<WorkedHour[]> {
-	try {
-		const projects = await getProjects();
-		const projectIds = projects.map((project) => project.id);
+	const projects = await getProjects();
+	const projectIds = projects.map((project) => project.id);
 
-		const start_date = dateString(startDate);
-		const end_date = dateString(endDate);
+	const start_date = dateString(startDate);
+	const end_date = dateString(endDate);
 
-		const accessToken = await getTrackerAccessToken();
+	const accessToken = await getTrackerAccessToken();
 
-		let query = `start_date=${start_date}`;
-		query += `&end_date=${end_date}`;
-		query += `&${projectIds.map((id) => `project_ids[]=${id}`).join("&")}`;
-		query += `&access_token=${accessToken}`;
+	let query = `start_date=${start_date}`;
+	query += `&end_date=${end_date}`;
+	query += `&${projectIds.map((id) => `project_ids[]=${id}`).join("&")}`;
+	query += `&access_token=${accessToken}`;
 
-		const res = await fetch(`${TRACKER_URL}/?${query}`);
-		const { dates } = await res.json();
+	const res = await fetch(`${TRACKER_URL}/?${query}`);
+	const { dates } = await res.json();
 
-		return dates;
-	} catch (e) {
-		return [];
-	}
+	if (!res.ok) throw {};
+
+	return dates;
 }

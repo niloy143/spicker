@@ -79,3 +79,20 @@ export function dateString(date: Date, separator: string = "-"): string {
 
 	return [year, month, day].join(separator);
 }
+
+/**
+ * Returns an array of Date objects for all days between two dates, inclusive.
+ * @param start - The start date
+ * @param end - The end date
+ * @returns Array of Date objects from start to end (inclusive)
+ */
+export function getDatesBetween(start: Date, end: Date): Date[] {
+    const dates: Date[] = [];
+    let current = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const last = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+    while (current <= last) {
+        dates.push(new Date(current));
+        current.setDate(current.getDate() + 1);
+    }
+    return dates;
+}

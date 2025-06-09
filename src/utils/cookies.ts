@@ -1,15 +1,15 @@
 /**
  * Get the tracker access token from cookies
- * @returns Promise<string | null> The access token or null if not found
+ * @returns Promise<string> The access token or empty string if not found
  */
-export const getTrackerAccessToken = async (): Promise<string | null> => {
+export const getTrackerAccessToken = async (): Promise<string> => {
 	try {
 		const cookie = await chrome.cookies.get({
 			name: "tracker_access_token",
 			url: "https://tracker.toptal.com",
 		});
-		return cookie?.value || null;
+		return cookie?.value || "";
 	} catch (error) {
-		return null;
+		return "";
 	}
 };
