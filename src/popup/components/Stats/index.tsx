@@ -1,30 +1,7 @@
 import { useEffect, useState } from "react";
 import { getDatesInMonth, formatDate, dateString, formatHours } from "../../../utils/dates";
 import { getWorkedHours, WorkedHour } from "../../../utils/api";
-
-const styles: { [key: string]: React.CSSProperties } = {
-	container: {
-		padding: "20px 30px",
-	},
-	h3: {
-		padding: "10px 10px 24px 10px",
-		fontSize: 32,
-		fontWeight: 600,
-		textAlign: "center",
-	},
-	tr: {
-		border: "1px solid #999",
-	},
-	td: {
-		border: "1px solid #999",
-		padding: "10px 20px",
-	},
-	th: {
-		border: "1px solid #333",
-		padding: "10px 20px",
-		fontWeight: 600,
-	},
-};
+import Spinner from "../Spinner";
 
 export default function Stats() {
 	const [workedHours, setWorkedHours] = useState<WorkedHour[]>();
@@ -56,16 +33,23 @@ export default function Stats() {
 			.finally(() => setLoading(false));
 	}, []);
 
+	if (loading)
+		return (
+			<div className="min-h-screen flex justify-center items-center">
+				<Spinner />
+			</div>
+		);
+
 	return (
-		<div style={styles.container}>
-			<h3 style={styles.h3}>Spicker Reports</h3>
-			<table>
+		<div className="bg-white rounded-lg shadow p-4 overflow-x-auto">
+			<h3 className="text-lg font-bold mb-4 text-center">Spicker Reports</h3>
+			<table className="min-w-full border border-gray-300 rounded overflow-hidden">
 				<thead>
-					<tr style={styles.tr}>
-						<th style={styles.th}> Date </th>
-						<th style={styles.th}> Worked </th>
-						<th style={styles.th}> Required </th>
-						<th style={styles.th}> Difference </th>
+					<tr className="bg-gray-100">
+						<th className="px-3 py-2 text-left font-semibold text-gray-700"> Date </th>
+						<th className="px-3 py-2 text-left font-semibold text-gray-700"> Worked </th>
+						<th className="px-3 py-2 text-left font-semibold text-gray-700"> Required </th>
+						<th className="px-3 py-2 text-left font-semibold text-gray-700"> Difference </th>
 					</tr>
 				</thead>
 				<tbody>
@@ -74,11 +58,11 @@ export default function Stats() {
 						const isLessWorked = gapHours < 0;
 
 						return (
-							<tr key={date.toString()} style={styles.tr}>
-								<td style={styles.td}> {formatDate(date)} </td>
-								<td style={styles.td}> {formatHours(workedHours)} </td>
-								<td style={styles.td}> {formatHours(requiredHours)} </td>
-								<td style={styles.td}>
+							<tr key={date.toString()} className="even:bg-gray-50">
+								<td className="px-3 py-2 whitespace-nowrap"> {formatDate(date)} </td>
+								<td className="px-3 py-2 whitespace-nowrap"> {formatHours(workedHours)} </td>
+								<td className="px-3 py-2 whitespace-nowrap"> {formatHours(requiredHours)} </td>
+								<td className="px-3 py-2 whitespace-nowrap">
 									{isLessWorked ? "(-)" : ""} {formatHours(gapHours)}
 								</td>
 							</tr>
@@ -86,11 +70,11 @@ export default function Stats() {
 					})}
 				</tbody>
 				<tfoot>
-					<tr style={styles.tr}>
-						<th style={styles.th}> Total </th>
-						<th style={styles.th}> {formatHours(totalWorkedHours)} </th>
-						<th style={styles.th}> {formatHours(totalRequiredHours)} </th>
-						<th style={styles.th}>
+					<tr className="bg-gray-200 font-semibold">
+						<th className="px-3 py-2 text-left"> Total </th>
+						<th className="px-3 py-2 text-left"> {formatHours(totalWorkedHours)} </th>
+						<th className="px-3 py-2 text-left"> {formatHours(totalRequiredHours)} </th>
+						<th className="px-3 py-2 text-left">
 							{isLessWorkedInTotal ? "(-)" : ""} {formatHours(totalGapHours)}
 						</th>
 					</tr>

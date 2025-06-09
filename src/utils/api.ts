@@ -1,14 +1,14 @@
-import { getAccessToken } from "./browser-cookies";
+import { getTrackerAccessToken } from "./cookies";
 import { dateString } from "./dates";
 
 export const BASE_URL = `https://tracker-api.toptal.com`;
 export const TRACKER_URL = `${BASE_URL}/activities/my`;
 export const PROJECTS_URL = `${BASE_URL}/web/projects`;
 
-const accessToken = getAccessToken();
-
 async function getProjects() {
 	try {
+		const accessToken = await getTrackerAccessToken();
+
 		let query = `archived=true`;
 		query += `&access_token=${accessToken}`;
 
@@ -34,7 +34,7 @@ export async function getWorkedHours(startDate: Date, endDate: Date): Promise<Wo
 		const start_date = dateString(startDate);
 		const end_date = dateString(endDate);
 
-		const accessToken = getAccessToken();
+		const accessToken = await getTrackerAccessToken();
 
 		let query = `start_date=${start_date}`;
 		query += `&end_date=${end_date}`;
