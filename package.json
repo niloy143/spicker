@@ -1,11 +1,11 @@
 {
 	"name": "spicker",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Extend the statistics of TopTracker",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "vite build --watch",
+		"start": "vite build --watch",
 		"build": "vite build"
 	},
 	"keywords": [],
@@ -14,10 +14,13 @@
 	"type": "module",
 	"dependencies": {
 		"@tailwindcss/vite": "^4.1.8",
+		"@tanstack/react-query": "^5.83.0",
 		"@vitejs/plugin-react": "^4.5.0",
+		"date-fns": "^4.1.0",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
 		"react-multi-date-picker": "^4.5.2",
+		"react-switch": "^7.1.0",
 		"tailwindcss": "^4.1.8"
 	},
 	"devDependencies": {

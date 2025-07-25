@@ -1,6 +1,7 @@
 import { getTrackerAccessToken } from "./cookies";
 import { dateString } from "./dates";
 
+export const SIGNIN_URL = `https://tracker.toptal.com/signin/`;
 export const BASE_URL = `https://tracker-api.toptal.com`;
 export const TRACKER_URL = `${BASE_URL}/activities/my`;
 export const PROJECTS_URL = `${BASE_URL}/web/projects`;
@@ -13,6 +14,10 @@ async function getProjects() {
 		query += `&access_token=${accessToken}`;
 
 		const res = await fetch(`${PROJECTS_URL}/?${query}`);
+		if (res.status === 401 || res.status === 403) {
+			window.location.href = SIGNIN_URL;
+		}
+
 		const projects = await res.json();
 
 		return projects?.projects || [];

@@ -1,25 +1,31 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import DatePicker from "react-multi-date-picker";
-import { getDatesInMonth, formatDate, dateString, formatHours, getDatesBetween } from "../../../utils/dates";
-import { getWorkedHours, WorkedHour } from "../../../utils/api";
+import { getDatesInMonth, dateString, formatHours, getDatesBetween } from "../../../utils/dates";
 import Spinner from "../Spinner";
+import useWorkedHours from "../../hooks/useWorkedHours";
+import useOffDays from "../../hooks/useOffDays";
+import { isSameDay } from "date-fns";
+import Switch from "react-switch";
 
 export default function Stats() {
 	const currentMonth = getDatesInMonth();
 	const [startDate, setStartDate] = useState<Date>(currentMonth[0]);
-	const [endDate, setEndDate] = useState<Date>(currentMonth[currentMonth.length - 1]);
-	const [workedHours, setWorkedHours] = useState<WorkedHour[]>();
-	const [loading, setLoading] = useState(true);
+	const [endDate, setEndDate] = useState<Date>(currentMonth[new Date().getDate() - 1]);
 	const dates = useMemo(() => getDatesBetween(startDate, endDate), [startDate, endDate]);
 
 	const weeklyRequiredHours = [0, 8, 8, 8, 8, 8, 4];
+
+	const { offDays, addOffDay, removeOffDay } = useOffDays();
+	const { workedHours, isLoading } = useWorkedHours(startDate, endDate);
+
+	const isOffDay = (date: Date) => offDays.some((offDay) => isSameDay(offDay, date));
 
 	const stats = dates.map((date) => {
 		const dateStr = dateString(date);
 
 		return {
-			date: date,
-			requiredHours: weeklyRequiredHours[date.getDay()],
+			date,
+			requiredHours: isOffDay(date) ? 0 : weeklyRequiredHours[date.getDay()],
 			workedHours: (workedHours?.find((v) => v.date === dateStr)?.total || 0) / 3600,
 		};
 	});
@@ -28,15 +34,6 @@ export default function Stats() {
 	const totalRequiredHours = stats.reduce((sum, { requiredHours }) => sum + requiredHours, 0);
 	const totalGapHours = totalWorkedHours - totalRequiredHours;
 	const isLessWorkedInTotal = totalGapHours < 0;
-
-	useEffect(() => {
-		setLoading(true);
-
-		getWorkedHours(dates[0], dates[dates.length - 1])
-			.then((ts) => setWorkedHours(ts))
-			.catch(() => (window.location.href = "https://tracker.toptal.com/app/reports"))
-			.finally(() => setLoading(false));
-	}, [dates]);
 
 	return (
 		<div className="bg-white rounded-lg shadow p-4 overflow-x-auto max-w-7xl mx-auto">
@@ -67,6 +64,7 @@ export default function Stats() {
 						<th className="px-3 py-2 text-left font-semibold text-gray-700"> Required </th>
 						<th className="px-3 py-2 text-left font-semibold text-gray-700"> Worked </th>
 						<th className="px-3 py-2 text-left font-semibold text-gray-700"> Difference </th>
+						<th className="px-3 py-2 text-left font-semibold text-gray-700"> Off Day </th>
 					</tr>
 				</thead>
 				<tbody>
@@ -75,15 +73,27 @@ export default function Stats() {
 						const isLessWorked = gapHours < 0;
 						const dayStr = date.toLocaleDateString("en-US", { weekday: "long" });
 						const dateStr = `${date.getDate()} ${date.toLocaleDateString("en-US", { month: "long" })} ${date.getFullYear()}`;
+						const offDay = isOffDay(date);
 
 						return (
-							<tr key={date.toString()} className="even:bg-gray-50">
+							<tr key={date.toString()} className={`even:bg-gray-50 ${offDay ? "opacity-50" : ""}`}>
 								<td className={`px-3 py-2 whitespace-nowrap`}>{dateStr}</td>
 								<td className={`px-3 py-2 whitespace-nowrap`}>{dayStr}</td>
 								<td className={`px-3 py-2 whitespace-nowrap`}>{formatHours(requiredHours)}</td>
-								<td className={`px-3 py-2 whitespace-nowrap`}>{loading ? <Spinner /> : formatHours(workedHours)}</td>
+								<td className={`px-3 py-2 whitespace-nowrap`}>{isLoading ? <Spinner /> : formatHours(workedHours)}</td>
 								<td className={`px-3 py-2 whitespace-nowrap ${isLessWorked ? "text-red-800" : "text-green-800"}`}>
-									{loading ? <Spinner /> : formatHours(gapHours)}
+									{isLoading ? <Spinner /> : formatHours(gapHours)}
+								</td>
+								<td className={`px-3 py-2 whitespace-nowrap flex items-center`}>
+									<Switch
+										checked={offDay}
+										onChange={() => {
+											if (offDay) removeOffDay(date);
+											else addOffDay(date);
+										}}
+										height={20}
+										width={40}
+									/>
 								</td>
 							</tr>
 						);
@@ -94,10 +104,11 @@ export default function Stats() {
 						<th className="px-3 py-2 text-left"> Total </th>
 						<th />
 						<th className="px-3 py-2 text-left"> {formatHours(totalRequiredHours)} </th>
-						<th className="px-3 py-2 text-left"> {loading ? <Spinner /> : formatHours(totalWorkedHours)} </th>
+						<th className="px-3 py-2 text-left"> {isLoading ? <Spinner /> : formatHours(totalWorkedHours)} </th>
 						<th className={`px-3 py-2 text-left ${isLessWorkedInTotal ? "text-red-800" : "text-green-800"}`}>
-							{loading ? <Spinner /> : formatHours(totalGapHours)}
+							{isLoading ? <Spinner /> : formatHours(totalGapHours)}
 						</th>
+						<th />
 					</tr>
 				</tfoot>
 			</table>
