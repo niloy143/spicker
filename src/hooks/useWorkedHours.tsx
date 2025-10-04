@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getWorkedHours, WorkedHour } from "../../utils/api";
+import { getWorkedHours, WorkedHour } from "../utils/api";
 
 const KEY = "worked-hours";
 

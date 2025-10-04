@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { isDate } from "../../utils/is-date";
+import { isDate } from "../utils/is-date";
 
 const KEY = "off-days";
 

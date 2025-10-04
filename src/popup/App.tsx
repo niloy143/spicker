@@ -1,9 +1,18 @@
-import Stats from "./components/Stats";
+import Overview from "../components/Overview";
+import { navigate } from "../utils/navigate";
+import { FaArrowRight } from "react-icons/fa6";
 
 export default function App() {
 	return (
-		<div className="bg-gray-100 p-5 min-h-screen">
-			<Stats />
+		<div className="w-sm min-h-[480px] p-8 bg-gradient-to-b from-[#A7DEFD] to-[#10446F]">
+			<Overview />
+			<button
+				onClick={() => navigate("index.html")}
+				className="py-3 px-5 mt-4 w-full hover:-translate-y-0.5 flex justify-center items-center gap-2 bg-[#A7DEFD] text-[#10446F] font-semibold rounded-xl cursor-pointer active:scale-95 transition"
+			>
+				See Details
+				<FaArrowRight />
+			</button>
 		</div>
 	);
 }
