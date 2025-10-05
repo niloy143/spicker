@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+@theme {
+	--color-brand: #10446f;
+	--color-brand-light: #a7defd;
+}
+
 body {
-    font-size: 16px;
+	font-size: 16px;
+	color: #333;
+}
+
+input[type="number"].appearance-none::-webkit-outer-spin-button,
+input[type="number"].appearance-none::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+input[type="number"].appearance-none {
+	-moz-appearance: textfield;
+	appearance: none;
+}
+
+button {
+    cursor: pointer;
 }

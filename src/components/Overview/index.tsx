@@ -67,7 +67,7 @@ const Overview = () => {
 	const { workedHours, isFetching } = useWorkedHours(startOfMonth, endOfMonth);
 	const { offDays } = useOffDays();
 
-	const weeklyRequiredHours = useWeeklyRequiredHours();
+	const { weeklyRequiredHours } = useWeeklyRequiredHours();
 
 	const isOffDay = (date: Date) => offDays.some((offDay) => isSameDay(offDay, date));
 

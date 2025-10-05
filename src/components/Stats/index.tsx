@@ -4,9 +4,11 @@ import { getDatesInMonth, dateString, formatHours, getDatesBetween } from "../..
 import Spinner from "../../components/Spinner";
 import useWorkedHours from "../../hooks/useWorkedHours";
 import useOffDays from "../../hooks/useOffDays";
-import { isSameDay } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import Switch from "react-switch";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useWeeklyRequiredHours } from "../../hooks/useWeeklyRequiredHours";
+import { WeeklyHoursInput } from "./WeeklyHoursInput";
 
 export default function Stats() {
 	const currentMonth = getDatesInMonth();
@@ -14,7 +16,7 @@ export default function Stats() {
 	const [endDate, setEndDate] = useState<Date>(currentMonth[new Date().getDate() - 1]);
 	const dates = useMemo(() => getDatesBetween(startDate, endDate), [startDate, endDate]);
 
-	const weeklyRequiredHours = useWeeklyRequiredHours();
+	const { weeklyRequiredHours } = useWeeklyRequiredHours();
 
 	const { offDays, addOffDay, removeOffDay } = useOffDays();
 	const { workedHours, isLoading } = useWorkedHours(startDate, endDate);
@@ -38,12 +40,13 @@ export default function Stats() {
 
 	return (
 		<div className="bg-white rounded-lg shadow p-4 overflow-x-auto max-w-7xl mx-auto">
-			<h3 className="text-3xl font-semibold mt-3 mb-6 text-center">Spicker Reports</h3>
+			<h3 className="text-2xl font-semibold mt-3 mb-6 text-center text-gray-600">Spicker Reports</h3>
 
-			<div className="mb-4">
+			<div className="mb-4 flex justify-between items-end">
 				<DatePicker
 					value={[dates[0], dates[dates.length - 1]]}
 					range
+					inputClass="px-4 py-2 border border-gray-300 focus:border-2 focus:border-brand focus:outline-none rounded-md text-gray-700 font-medium bg-white shadow-sm"
 					onChange={(dateRange) => {
 						if (dateRange.length !== 2) return;
 						if (dateRange.some((date) => !date.isValid)) return;
@@ -55,6 +58,36 @@ export default function Stats() {
 						setEndDate(end);
 					}}
 				/>
+				<WeeklyHoursInput />
+				<div className="flex items-stretch space-x-2 mt-2">
+					<button
+						className="p-3 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-medium transition"
+						onClick={() => {
+							const prevMonth = new Date(startDate);
+							prevMonth.setMonth(prevMonth.getMonth() - 1);
+							const prevMonthDates = getDatesInMonth(prevMonth);
+							setStartDate(prevMonthDates[0]);
+							setEndDate(prevMonthDates[prevMonthDates.length - 1]);
+						}}
+					>
+						<FaChevronLeft />
+					</button>
+					<span className="flex-1 flex justify-center items-center px-5 bg-brand-light/50 text-brand font-semibold rounded">
+						{format(startDate, "MMMM, yyyy")}
+					</span>
+					<button
+						className="p-3 bg-gray-200 hover:bg-gray-300 rounded text-gray-700 font-medium transition"
+						onClick={() => {
+							const nextMonth = new Date(startDate);
+							nextMonth.setMonth(nextMonth.getMonth() + 1);
+							const nextMonthDates = getDatesInMonth(nextMonth);
+							setStartDate(nextMonthDates[0]);
+							setEndDate(nextMonthDates[nextMonthDates.length - 1]);
+						}}
+					>
+						<FaChevronRight />
+					</button>
+				</div>
 			</div>
 
 			<table className="min-w-full border border-gray-300 rounded overflow-hidden">
@@ -77,7 +110,7 @@ export default function Stats() {
 						const offDay = isOffDay(date);
 
 						return (
-							<tr key={date.toString()} className={`even:bg-gray-50 ${offDay ? "opacity-50" : ""}`}>
+							<tr key={date.toString()} className={`even:bg-gray-50`}>
 								<td className={`px-3 py-2 whitespace-nowrap`}>{dateStr}</td>
 								<td className={`px-3 py-2 whitespace-nowrap`}>{dayStr}</td>
 								<td className={`px-3 py-2 whitespace-nowrap`}>{formatHours(requiredHours)}</td>
