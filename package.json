@@ -1,6 +1,6 @@
 {
 	"name": "spicker",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "Extend the statistics of TopTracker",
 	"main": "index.js",
 	"scripts": {

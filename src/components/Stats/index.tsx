@@ -6,6 +6,7 @@ import useWorkedHours from "../../hooks/useWorkedHours";
 import useOffDays from "../../hooks/useOffDays";
 import { isSameDay } from "date-fns";
 import Switch from "react-switch";
+import { useWeeklyRequiredHours } from "../../hooks/useWeeklyRequiredHours";
 
 export default function Stats() {
 	const currentMonth = getDatesInMonth();
@@ -13,7 +14,7 @@ export default function Stats() {
 	const [endDate, setEndDate] = useState<Date>(currentMonth[new Date().getDate() - 1]);
 	const dates = useMemo(() => getDatesBetween(startDate, endDate), [startDate, endDate]);
 
-	const weeklyRequiredHours = [0, 8, 8, 8, 8, 8, 4];
+	const weeklyRequiredHours = useWeeklyRequiredHours();
 
 	const { offDays, addOffDay, removeOffDay } = useOffDays();
 	const { workedHours, isLoading } = useWorkedHours(startDate, endDate);

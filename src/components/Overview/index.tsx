@@ -1,11 +1,12 @@
 import React from "react";
 
 import { useMemo } from "react";
-import { getDatesInMonth, dateString } from "../../utils/dates.js";
+import { getDatesInMonth, dateString, formatHours } from "../../utils/dates.js";
 import useWorkedHours from "../../hooks/useWorkedHours.js";
 import useOffDays from "../../hooks/useOffDays.js";
 import { isSameDay, format } from "date-fns";
 import Spinner from "../Spinner/index.js";
+import { useWeeklyRequiredHours } from "../../hooks/useWeeklyRequiredHours.js";
 
 interface StatCardProps {
 	title: string;
@@ -17,13 +18,6 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = ({ title, subtitle, hoursWorked, hoursRemaining, isLoading, progress }) => {
-	const formatHours = (hours: number | null) => {
-		if (hours === null) return "--:--";
-		const h = Math.floor(Math.abs(hours));
-		const m = Math.round((Math.abs(hours) - h) * 60);
-		return `${h}h ${m}m`;
-	};
-
 	const isOverworked = hoursRemaining !== null && hoursRemaining <= 0;
 
 	return (
@@ -40,7 +34,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, subtitle, hoursWorked, hours
 			</div>
 			<div className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
 				<span className="text-gray-500 text-sm font-medium">Worked</span>
-				<span className="font-bold text-base text-[#1379cc] flex items-center gap-1 min-h-5">{formatHours(hoursWorked)}</span>
+				<span className="font-bold text-base text-[#1379cc] flex items-center gap-1 min-h-5">{formatHours(hoursWorked || 0)}</span>
 			</div>
 			<div className="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
 				<span className="text-gray-500 text-sm font-medium">{isOverworked ? "Overworked" : "Remaining"}</span>
@@ -49,7 +43,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, subtitle, hoursWorked, hours
 						isLoading ? "text-gray-500" : isOverworked ? "text-green-800" : "text-red-800"
 					} flex items-center gap-1 min-h-5`}
 				>
-					{isLoading ? "" : isOverworked ? "(+)" : "(–)"} {formatHours(hoursRemaining)}
+					{isLoading ? "" : isOverworked ? "(+)" : "(–)"} {formatHours(hoursRemaining || 0)}
 				</span>
 			</div>
 			<div className="w-full h-1.5 bg-black/10 rounded mt-3 overflow-hidden">
@@ -73,7 +67,7 @@ const Overview = () => {
 	const { workedHours, isFetching } = useWorkedHours(startOfMonth, endOfMonth);
 	const { offDays } = useOffDays();
 
-	const weeklyRequiredHours = [0, 8, 8, 8, 8, 8, 4];
+	const weeklyRequiredHours = useWeeklyRequiredHours();
 
 	const isOffDay = (date: Date) => offDays.some((offDay) => isSameDay(offDay, date));
 
