@@ -1,0 +1,73 @@
+name: Build and Package Chrome Extension
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+
+jobs:
+  build-and-package:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build extension
+      run: npm run build
+
+    - name: Create ZIP package
+      run: |
+        cd build
+        if [[ $GITHUB_REF == refs/tags/* ]]; then
+          VERSION=${GITHUB_REF#refs/tags/}
+        else
+          VERSION=${GITHUB_SHA::7}
+        fi
+        ZIP_NAME="spicker-${VERSION}.zip"
+        echo "📦 Creating package: $ZIP_NAME"
+        zip -r "../$ZIP_NAME" .
+        echo "📊 Package size: $(du -sh ../$ZIP_NAME | cut -f1)"
+
+    - name: Upload build artifacts
+      if: github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/')
+      uses: actions/upload-artifact@v4
+      with:
+        name: spicker-extension
+        path: spicker-*.zip
+        retention-days: 30
+
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          ## 🚀 Spicker Extension ${{ github.ref_name }}
+
+          Download the extension package and submit to Chrome Web Store.
+        draft: false
+        prerelease: false
+
+    - name: Upload release asset
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: spicker-*.zip
+        asset_name: spicker-${{ github.ref_name }}.zip
+        asset_content_type: application/zip
