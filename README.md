@@ -18,13 +18,16 @@ Getting started with Spicker is quick and easy! Follow these simple steps to ins
 That's it! Spicker is now ready to supercharge your TopTracker experience. If you encounter any issues, ensure your Chrome browser is up to date.
 
 ### Key Features:
-- Real-time Dashboard: Monitor daily and monthly progress at a glance
-- Custom Hour Requirements: Set personalized weekly schedules (Mon-Fri 8hrs, Sat 4hrs, Sun off)
-- Off-Day Management: Mark vacation days, holidays, and personal time off
-- Advanced Reporting: Detailed tables with worked vs required hours analysis
-- Visual Progress Bars: See your productivity trends with beautiful charts
-- Date Range Analysis: Custom date picker for flexible reporting periods
-- Monthly Navigation: Easy month-by-month time tracking review
+- **Real-time Dashboard**: Monitor daily and monthly progress at a glance
+- **Custom Hour Requirements**: Set personalized weekly schedules (Mon-Fri 8hrs, Sat 4hrs, Sun off)
+- **Editable Required Hours**: ✨ NEW - Customize required hours for individual dates
+- **Custom Time Adjustments**: ✨ NEW - Add or subtract time for manual corrections
+- **Off-Day Management**: Mark vacation days, holidays, and personal time off
+- **Advanced Reporting**: Detailed tables with worked vs required hours analysis
+- **Visual Progress Bars**: See your productivity trends with beautiful charts
+- **Date Range Analysis**: Custom date picker for flexible reporting periods
+- **Monthly Navigation**: Easy month-by-month time tracking review
+- **Cross-Device Sync**: ✨ NEW - Your settings sync across all devices automatically
 
 ### Perfect For:
 - Freelancers using TopTracker for client work
@@ -32,10 +35,11 @@ That's it! Spicker is now ready to supercharge your TopTracker experience. If yo
 - Teams tracking billable hours
 - Anyone wanting better work-life balance insights
 
-### Privacy First:
-- No data collection or external tracking
-- All data stays local in your browser
-- Secure Chrome extension permissions only
+### Privacy & Data:
+- **Synced Across Devices**: All your settings, custom hours, and adjustments sync automatically via Chrome Sync
+- **No External Servers**: Data is stored securely in your Chrome profile
+- **No Data Collection**: We don't collect or track any personal information
+- **Secure Permissions**: Only requires Chrome storage and TopTracker cookies access
 
 ### How It Works:
 1. Install and connect to your TopTracker account

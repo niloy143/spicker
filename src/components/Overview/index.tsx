@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { getDatesInMonth, dateString, formatHours } from "../../utils/dates.js";
 import useWorkedHours from "../../hooks/useWorkedHours.js";
 import useOffDays from "../../hooks/useOffDays.js";
+import useCustomRequiredHours from "../../hooks/useCustomRequiredHours.js";
 import { isSameDay, format } from "date-fns";
 import Spinner from "../Spinner/index.js";
 import { useWeeklyRequiredHours } from "../../hooks/useWeeklyRequiredHours.js";
@@ -66,12 +67,19 @@ const Overview = () => {
 
 	const { workedHours, isFetching } = useWorkedHours(startOfMonth, endOfMonth);
 	const { offDays } = useOffDays();
-
 	const { weeklyRequiredHours } = useWeeklyRequiredHours();
+	const { getCustomHour } = useCustomRequiredHours();
 
 	const isOffDay = (date: Date) => offDays.some((offDay) => isSameDay(offDay, date));
 
-	const dailyRequired = weeklyRequiredHours[today.getDay()];
+	const getRequiredHours = (date: Date) => {
+		if (isOffDay(date)) return 0;
+		const dateStr = dateString(date);
+		const custom = getCustomHour(dateStr);
+		return custom !== undefined ? custom : weeklyRequiredHours[date.getDay()];
+	};
+
+	const dailyRequired = getRequiredHours(today);
 	const dailyWorked = useMemo(() => {
 		if (!workedHours) return null;
 		const todayStr = dateString(today);
@@ -84,7 +92,7 @@ const Overview = () => {
 	const monthlyRequired = useMemo(() => {
 		if (!currentMonth) return 0;
 		const dates = currentMonth.slice(0, today.getDate());
-		return dates.reduce((sum, date) => sum + (isOffDay(date) ? 0 : weeklyRequiredHours[date.getDay()]), 0);
+		return dates.reduce((sum, date) => sum + getRequiredHours(date), 0);
 	}, [currentMonth, today, offDays]);
 
 	const monthlyWorked = useMemo(() => {

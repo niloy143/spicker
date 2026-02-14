@@ -10,6 +10,12 @@ export default defineConfig({
 			input: {
 				main: "index.html",
 				popup: "popup.html",
+				background: "src/background/main.tsx",
+			},
+			output: {
+				entryFileNames: "assets/[name].js",
+				chunkFileNames: "assets/[name]-[hash].js",
+				assetFileNames: "assets/[name]-[hash].[ext]",
 			},
 		},
 	},

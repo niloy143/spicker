@@ -3,35 +3,23 @@ import { isDate } from "../utils/is-date";
 
 const KEY = "off-days";
 
-const getStoredOffDays = () => {
-	const storedOffDays = localStorage.getItem(KEY);
-	if (storedOffDays) {
-		try {
-			const parsedOffDays = JSON.parse(storedOffDays) as string[];
-			return parsedOffDays.map((day) => {
-				const date = new Date(day);
-				if (!isDate(date)) throw new Error(`Invalid date: ${day}`);
-				return date;
-			});
-		} catch (error) {
-			console.error("Error parsing off days from localStorage:", error);
-		}
-	}
-	return [];
-};
-
-const storeOffDays = (days: Date[]) => {
-	localStorage.setItem(KEY, JSON.stringify(days));
-};
-
 export default function useOffDays() {
 	const [offDays, setOffDays] = useState<Date[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 
+	const save = (days: Date[]) => {
+		const strings = days.map((d) => d.toISOString());
+		if (typeof chrome !== "undefined" && chrome.storage) {
+			chrome.storage.sync.set({ [KEY]: strings });
+		} else {
+			localStorage.setItem(KEY, JSON.stringify(strings));
+		}
+	};
+
 	const addOffDay = (date: Date) => {
 		setOffDays((prev) => {
 			const newOffDays = [...prev, date];
-			storeOffDays(newOffDays);
+			save(newOffDays);
 			return newOffDays;
 		});
 	};
@@ -39,15 +27,49 @@ export default function useOffDays() {
 	const removeOffDay = (date: Date) => {
 		setOffDays((prev) => {
 			const newOffDays = prev.filter((d) => d.getTime() !== date.getTime());
-			storeOffDays(newOffDays);
+			save(newOffDays);
 			return newOffDays;
 		});
 	};
 
 	useEffect(() => {
-		const storedOffDays = getStoredOffDays();
-		if (storedOffDays.length) setOffDays(storedOffDays);
-		setIsLoading(false);
+		const load = async () => {
+			setIsLoading(true);
+			try {
+				let loadedDays: string[] = [];
+
+				if (typeof chrome !== "undefined" && chrome.storage) {
+					const result = await chrome.storage.sync.get([KEY]);
+					if (result[KEY]) {
+						loadedDays = result[KEY];
+					} else {
+						// Migration
+						const local = localStorage.getItem(KEY);
+						if (local) {
+							loadedDays = JSON.parse(local);
+							chrome.storage.sync.set({ [KEY]: loadedDays });
+						}
+					}
+				} else {
+					const local = localStorage.getItem(KEY);
+					if (local) {
+						loadedDays = JSON.parse(local);
+					}
+				}
+
+				if (Array.isArray(loadedDays)) {
+					const dates = loadedDays
+						.map((d) => new Date(d))
+						.filter((d) => isDate(d));
+					setOffDays(dates);
+				}
+			} catch (error) {
+				console.error("Error loading off days:", error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		load();
 	}, []);
 
 	return { offDays, isLoading, addOffDay, removeOffDay };

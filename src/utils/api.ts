@@ -5,6 +5,7 @@ export const SIGNIN_URL = `https://tracker.toptal.com/signin/`;
 export const BASE_URL = `https://tracker-api.toptal.com`;
 export const TRACKER_URL = `${BASE_URL}/activities/my`;
 export const PROJECTS_URL = `${BASE_URL}/web/projects`;
+export const TRACKER_WEB_URL = `https://tracker.toptal.com/`;
 
 async function getProjects() {
 	try {
@@ -15,7 +16,17 @@ async function getProjects() {
 
 		const res = await fetch(`${PROJECTS_URL}/?${query}`);
 		if (res.status === 401 || res.status === 403) {
-			window.location.href = SIGNIN_URL;
+			const isPopup = window.location.pathname.includes("popup.html");
+			
+			// Set flag to track that we initiated this redirect
+			await chrome.storage.local.set({ pending_login_redirect: true });
+
+			if (isPopup) {
+				chrome.tabs.create({ url: SIGNIN_URL });
+			} else {
+				window.location.href = SIGNIN_URL;
+			}
+			return [];
 		}
 
 		const projects = await res.json();
