@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Spicker - TopTracker Time Analytics",
-	"description": "Enhance your TopTracker experience with advanced time tracking analytics, custom hour requirements, and detailed productivity reports.",
+	"description": "Enhance your TopTracker experience with advanced time tracking analytics, custom hour requirements, and detailed reports.",
 	"version": "1.4.0",
 	"action": {
 		"default_popup": "popup.html",
@@ -23,5 +23,5 @@
 		"48": "icons/icon48.png",
 		"128": "icons/icon128.png"
 	},
-	"homepage_url": "https://spicker.niloy.org/"
+	"homepage_url": "https://spicker.niloy.me/"
 }

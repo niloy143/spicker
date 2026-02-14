@@ -1,4 +1,4 @@
-# [Spicker](https://spicker.niloy.org/)
+# [Spicker](https://spicker.niloy.me/)
 
 *Supercharge* Your Time Tracking with Spicker!
 
