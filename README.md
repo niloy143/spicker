@@ -1,4 +1,4 @@
-# [Spicker](https://spicker.niloy.me/)
+# [Spicker](https://chromewebstore.google.com/detail/spicker/pnjmomnechbnmnimlfgmieefkmmcjjhe)
 
 *Supercharge* Your Time Tracking with Spicker!
 
